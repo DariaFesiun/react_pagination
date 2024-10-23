@@ -1,91 +1,79 @@
 import React from 'react';
-import cn from 'classnames';
 
 type Props = {
   total: number;
   perPage: number;
   currentPage: number;
   onPageChange: (page: number) => void;
-}
+};
 
 export const Pagination: React.FC<Props> = ({
   total,
   perPage,
-  currentPage,
+  currentPage = 1,
   onPageChange,
 }) => {
+  const totalPages = Math.ceil(total / perPage);
 
-  const countButtons = Math.ceil(total / perPage);
-  const buttons: number[] = Array.from(
-    { length: countButtons },
-    (_, i) => i + 1,
-  );
-  const isActive = (pageNumber: number): boolean => {
-    return pageNumber === currentPage;
-  };
-
-  const disableNext = currentPage === 1;
-  const disablePrev = currentPage === buttons.length;
-
-  const returnPage = () => {
-    if (disableNext) {
-      return;
+  const handlePrevClick = () => {
+    if (currentPage > 1) {
+      onPageChange(currentPage - 1);
     }
-
-    onPageChange(currentPage - 1);
   };
 
-  const nextPage = () => {
-    if (disablePrev) {
-      return;
+  const handleNextClick = () => {
+    if (currentPage < totalPages) {
+      onPageChange(currentPage + 1);
     }
-
-    onPageChange(currentPage + 1);
   };
-
 
   return (
-    <ul className="pagination">
-        <li className={cn('page-item', { disabled: disableNext })}>
+    <>
+      <ul className="pagination">
+        <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
           <a
             data-cy="prevLink"
             className="page-link"
             href="#prev"
-            aria-disabled={disableNext}
-            onClick={returnPage}
-            >
+            aria-disabled={currentPage === 1}
+            onClick={handlePrevClick}
+          >
             «
           </a>
         </li>
-        {buttons.map(button => (
-        <li
-          className={cn('page-item', { active: isActive(button) })}
-          key={button}
-          >
-          <a
-            data-cy="pageLink"
-            className="page-link"
-            href={`#${button}`}
-            onClick={() => onPageChange(button)}
-          >
-            {button}
-          </a>
-        </li>
-        ))}
+        {[...Array(totalPages)].map((_, index) => {
+          const page = index + 1;
 
+          return (
+            <li
+              key={page}
+              className={`page-item ${page === currentPage ? 'active' : ''}`}
+            >
+              <a
+                data-cy="pageLink"
+                className="page-link"
+                href={`#${page}`}
+                onClick={() => onPageChange(page)}
+              >
+                {page}
+              </a>
+            </li>
+          );
+        })}
         <li
-          className={cn('page-item', { disabled: disablePrev, })}
+          className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}
         >
           <a
             data-cy="nextLink"
             className="page-link"
             href="#next"
-            onClick={nextPage}
-            aria-disabled={disablePrev}
+            aria-disabled={currentPage === totalPages}
+            onClick={handleNextClick}
           >
             »
           </a>
         </li>
       </ul>
+    </>
   );
 };

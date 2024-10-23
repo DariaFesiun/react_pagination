@@ -16,19 +16,16 @@ export const App: React.FC = () => {
   const visibleItems: string[] = items.slice(start, end);
 
   const handlePerPageItems = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
-
-    setPerPage(+value);
+    setPerPage(Number(e.target.value));
     setCurrentPage(1);
   };
-
 
   return (
     <div className="container">
       <h1>Items with Pagination</h1>
 
       <p className="lead" data-cy="info">
-         Page {currentPage} (items {start + 1} - {end} of {totalNumber})
+        Page {currentPage} (items {start + 1} - {end} of {totalNumber})
       </p>
 
       <div className="form-group row">
@@ -39,7 +36,7 @@ export const App: React.FC = () => {
             className="form-control"
             onChange={handlePerPageItems}
             value={perPage}
-            >
+          >
             <option value="3">3</option>
             <option value="5">5</option>
             <option value="10">10</option>
